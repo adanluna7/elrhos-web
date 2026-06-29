@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="ELRHOS — Sistema integral de Punto de Venta y gestión comercial para negocios con inventario complejo. Multi-terminal LAN, app Android y velocidad máxima en mostrador."/>
+  <title>ELRHOS — Impulso Empresarial | Sistema POS Integral</title>
+  <link rel="stylesheet" href="assets/css/main.css"/>
+  <style>
+    /* ── Page-specific styles ── */
+
+    /* HERO */
+    .hero {
+      position: relative;
+      min-height: 100svh;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      padding: 120px 0 100px;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 70% 60% at 60% 30%, rgba(59,110,212,0.13) 0%, transparent 65%),
+        radial-gradient(ellipse 50% 40% at 20% 70%, rgba(59,110,212,0.07) 0%, transparent 60%),
+        var(--bg-root);
+    }
+    .hero-bg .grid-bg { mask-image: radial-gradient(ellipse 90% 80% at 50% 0%, black 30%, transparent 85%); -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 0%, black 30%, transparent 85%); }
+    .hero-content { position: relative; z-index: 2; max-width: 780px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; }
+    .hero h1 {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: clamp(52px, 9vw, 100px);
+      font-weight: 700;
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      margin-bottom: 28px;
+    }
+    .hero h1 .line-blue {
+      display: block;
+      background: linear-gradient(100deg, var(--blue-light) 0%, #A5C3FF 50%, var(--blue-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      background-size: 200%;
+      animation: shimmer 4s linear infinite;
+    }
+    @keyframes shimmer { 0%{background-position:0%} 100%{background-position:200%} }
+    .hero-sub { font-size: clamp(16px, 2vw, 20px); color: var(--text-dim); max-width: 600px; line-height: 1.7; margin-bottom: 44px; }
+    .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 64px; }
+    .hero-visual {
+      position: absolute;
+      right: -20px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44%;
+      max-width: 520px;
+      z-index: 1;
+    }
+    .hero-visual-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      box-shadow: var(--shadow-lg), 0 0 80px rgba(59,110,212,0.12);
+      backdrop-filter: blur(10px);
+    }
+    .hvc-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .hvc-dots { display: flex; gap: 6px; }
+    .hvc-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .hvc-title { font-size: 13px; color: var(--gray-sub); font-weight: 500; }
+    .hvc-status { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--green); font-weight: 600; }
+    .hvc-search {
+      background: var(--bg-raised);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .hvc-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      border-radius: 8px;
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+    .hvc-row:nth-child(odd) { background: rgba(255,255,255,0.03); }
+    .hvc-row.hvc-row--hot { background: rgba(59,110,212,0.1); border: 1px solid rgba(59,110,212,0.2); }
+    .hvc-row-name { color: var(--text); font-weight: 500; }
+    .hvc-row-qty { color: var(--blue-light); font-size: 12px; }
+    .hvc-row-price { color: var(--text); font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+    .hvc-total {
+      margin-top: 14px;
+      background: var(--bg-raised);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 2px solid var(--blue);
+    }
+    .hvc-total-label { font-size: 12px; color: var(--gray-sub); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+    .hvc-total-val { font-family: 'Rajdhani', sans-serif; font-size: 28px; font-weight: 700; color: var(--text); }
+    .hvc-bottom { display: flex; gap: 8px; margin-top: 14px; }
+    .hvc-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      text-align: center;
+    }
+    .hvc-btn--primary { background: var(--blue); color: #fff; }
+    .hvc-btn--ghost { background: var(--bg-raised); color: var(--text-dim); border: 1px solid rgba(255,255,255,0.08); }
+
+    /* STATS BAR */
+    .stats-bar {
+      background: var(--bg-card);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 36px 0;
+    }
+    .stats-inner {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+    .stat { text-align: center; }
+    .stat-value {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 42px;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--text);
+    }
+    .stat-value .accent { color: var(--blue-light); }
+    .stat-label { font-size: 12px; color: var(--gray-sub); font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 5px; }
+    .stat-sep { width: 1px; height: 44px; background: rgba(255,255,255,0.08); }
+
+    /* FEATURES */
+    .features-intro { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; margin-bottom: 80px; }
+    .features-tag { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 28px; }
+    .tech-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-raised);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 6px;
+      padding: 5px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .tech-tag svg { color: var(--blue-light); }
+
+    .features-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .feat-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: var(--radius-lg);
+      padding: 32px 28px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+    }
+    .feat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--blue), transparent);
+      transform: scaleX(0);
+      transition: transform 0.35s;
+    }
+    .feat-card:hover { border-color: var(--blue-border); transform: translateY(-5px); box-shadow: 0 16px 48px rgba(0,0,0,0.4), 0 0 24px rgba(59,110,212,0.1); }
+    .feat-card:hover::before { transform: scaleX(1); }
+    .feat-card--wide { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+    .feat-icon {
+      width: 56px; height: 56px; border-radius: 16px;
+      background: var(--blue-glow);
+      border: 1px solid var(--blue-border);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 22px; font-size: 24px;
+    }
+    .feat-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--blue-light); margin-bottom: 8px; }
+    .feat-title { font-family: 'Rajdhani', sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 12px; line-height: 1.2; }
+    .feat-desc { font-size: 14px; color: var(--text-dim); line-height: 1.65; }
+    .feat-list { margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.07); }
+    .feat-list-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; font-size: 13px; color: var(--text-dim); }
+    .feat-list-item:last-child { margin-bottom: 0; }
+    .feat-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--blue); flex-shrink: 0; margin-top: 6px; }
+
+    /* LAN DIAGRAM */
+    .lan-diagram { background: var(--bg-raised); border-radius: var(--radius); padding: 28px; border: 1px solid rgba(255,255,255,0.07); }
+    .lan-server {
+      background: linear-gradient(135deg, var(--blue-glow), rgba(59,110,212,0.05));
+      border: 2px solid var(--blue);
+      border-radius: 12px;
+      padding: 16px 20px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .lan-server-label { font-size: 12px; color: var(--blue-light); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+    .lan-server-title { font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 700; margin-top: 4px; }
+    .lan-line {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .lan-line::after {
+      content: '';
+      width: 1px;
+      height: 24px;
+      background: linear-gradient(to bottom, var(--blue), transparent);
+    }
+    .lan-terminals { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .lan-terminal {
+      background: var(--bg-card);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+    .lan-terminal-icon { font-size: 18px; margin-bottom: 4px; }
+    .lan-terminal span { display: block; font-weight: 600; color: var(--text); font-size: 12px; }
+
+    /* BETA SECTION */
+    .beta-section {
+      background: linear-gradient(135deg, rgba(240,165,0,0.06) 0%, rgba(240,165,0,0.02) 100%);
+      border-top: 1px solid var(--amber-bdr);
+      border-bottom: 1px solid var(--amber-bdr);
+    }
+    .beta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+    .beta-visual {
+      background: var(--bg-card);
+      border: 1px solid var(--amber-bdr);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+    }
+    .beta-meter { margin-bottom: 24px; }
+    .beta-meter-label { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-dim); margin-bottom: 8px; }
+    .beta-meter-bar { height: 6px; background: var(--bg-raised); border-radius: 3px; overflow: hidden; }
+    .beta-meter-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--amber), var(--amber-light)); }
+    .beta-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .beta-tag {
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--amber-bg);
+      color: var(--amber);
+      border: 1px solid var(--amber-bdr);
+    }
+
+    /* DOWNLOAD HERO */
+    .download-section {
+      background: var(--bg-deep);
+      position: relative;
+      overflow: hidden;
+    }
+    .download-glow {
+      position: absolute;
+      top: -100px; left: 50%;
+      transform: translateX(-50%);
+      width: 800px; height: 500px;
+      background: radial-gradient(ellipse, rgba(59,110,212,0.12) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .download-box {
+      background: var(--bg-card);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: var(--radius-xl);
+      padding: 64px 56px;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+    .download-box::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: var(--radius-xl);
+      background: linear-gradient(135deg, rgba(59,110,212,0.25), transparent 50%);
+      z-index: -1;
+    }
+    .download-platforms {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+    .platform-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--bg-raised);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .platform-chip--unavail { opacity: 0.45; }
+    .platform-chip svg { flex-shrink: 0; }
+
+    /* TESTIMONIAL / CTA strip */
+    .cta-strip {
+      background: linear-gradient(135deg, var(--blue) 0%, #2252B2 100%);
+      padding: 72px 0;
+      text-align: center;
+    }
+    .cta-strip h2 { font-family: 'Rajdhani', sans-serif; font-size: clamp(32px, 5vw, 52px); font-weight: 700; margin-bottom: 16px; }
+    .cta-strip p { font-size: 17px; color: rgba(255,255,255,0.75); max-width: 520px; margin: 0 auto 36px; line-height: 1.7; }
+    .cta-strip .btn--primary { background: #fff; color: var(--blue); box-shadow: 0 8px 32px rgba(0,0,0,0.25); }
+    .cta-strip .btn--primary:hover { background: #E8EEF8; transform: translateY(-2px); }
+
+    /* RESPONSIVE */
+    @media (max-width: 1100px) {
+      .hero-visual { display: none; }
+      .features-intro { grid-template-columns: 1fr; gap: 36px; }
+      .features-cards { grid-template-columns: 1fr 1fr; }
+      .feat-card--wide { grid-column: span 2; }
+      .beta-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 680px) {
+      .features-cards { grid-template-columns: 1fr; }
+      .feat-card--wide { grid-column: 1; grid-template-columns: 1fr; }
+      .stat-sep { display: none; }
+      .download-box { padding: 40px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════ NAV ═══════════════════════════════════════════ -->
+<nav class="nav">
+  <div class="container nav-inner">
+    <a href="index.html" class="nav-logo">
+      <img src="assets/img/logo.png" alt="ELRHOS Impulso Empresarial"/>
+    </a>
+    <div class="nav-menu">
+      <a href="index.html" class="nav-link active">Inicio</a>
+      <a href="caracteristicas.html" class="nav-link">Características</a>
+      <a href="beta.html" class="nav-link">Programa Beta</a>
+      <a href="descargar.html" class="nav-link">Descargar</a>
+    </div>
+    <div class="nav-actions">
+      <a href="beta.html" class="btn btn--ghost" style="padding:9px 20px;font-size:13px;">Beta Feedback</a>
+      <a href="descargar.html" class="btn btn--primary" style="padding:9px 22px;font-size:13px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Descargar Gratis
+      </a>
+    </div>
+    <button class="nav-burger" aria-label="Abrir menú">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="nav-mobile">
+  <a href="index.html" class="nav-link">Inicio</a>
+  <a href="caracteristicas.html" class="nav-link">Características</a>
+  <a href="beta.html" class="nav-link">Programa Beta</a>
+  <a href="descargar.html" class="nav-link">Descargar</a>
+  <a href="descargar.html" class="btn btn--primary">Descargar Gratis</a>
+</div>
+
+<!-- ═══════════ HERO ══════════════════════════════════════════ -->
+<main class="page-top">
+<section class="hero">
+  <div class="hero-bg">
+    <div class="grid-bg grid-bg--animated"></div>
+  </div>
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-eyebrow">
+        <span class="badge badge--amber">
+          <span class="pulse" style="background:var(--amber)"></span>
+          Beta Pública Activa
+        </span>
+        <span class="badge badge--green">
+          <span class="pulse"></span>
+          Descarga Gratuita
+        </span>
+      </div>
+      <h1>
+        Controla tu negocio.<br>
+        <span class="line-blue">Sin límites.</span>
+      </h1>
+      <p class="hero-sub">
+        Sistema integral de Punto de Venta y gestión comercial para comercializadoras con inventario complejo. Diseñado para el mostrador real, no para el demo de ventas.
+      </p>
+      <div class="hero-actions">
+        <a href="descargar.html" class="btn btn--primary btn--primary-lg">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Descargar ELRHOS — Gratis
+        </a>
+        <a href="caracteristicas.html" class="btn btn--ghost">
+          Ver todas las características
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+        <span class="tech-tag">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          Python / PyQt5
+        </span>
+        <span class="tech-tag">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/></svg>
+          Android / Kotlin
+        </span>
+        <span class="tech-tag">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          Red LAN / Cliente-Servidor
+        </span>
+        <span class="tech-tag">🪟 Windows 64-bit</span>
+      </div>
+    </div>
+
+    <!-- Hero Visual: POS mockup -->
+    <div class="hero-visual reveal reveal--delay-2">
+      <div class="hero-visual-card">
+        <div class="hvc-header">
+          <div class="hvc-dots">
+            <span class="hvc-dot" style="background:#FF5F57"></span>
+            <span class="hvc-dot" style="background:#FEBC2E"></span>
+            <span class="hvc-dot" style="background:#28C840"></span>
+          </div>
+          <span class="hvc-title">ELRHOS POS — Terminal 1</span>
+          <span class="hvc-status">
+            <span class="pulse"></span> En línea
+          </span>
+        </div>
+        <div class="hvc-search">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gray-sub)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span>Buscar producto o código...</span>
+        </div>
+        <div class="hvc-row hvc-row--hot">
+          <span class="hvc-row-name">⚡ GRAPA 5/8 GALVANIZADA</span>
+          <span class="hvc-row-qty">×100 pzs</span>
+          <span class="hvc-row-price">$365.00</span>
+        </div>
+        <div class="hvc-row">
+          <span class="hvc-row-name">HULE NEOPRENO 3mm</span>
+          <span class="hvc-row-qty">×2 mts</span>
+          <span class="hvc-row-price">$96.00</span>
+        </div>
+        <div class="hvc-row">
+          <span class="hvc-row-name">RETÉN CIGÜEÑAL DEL.</span>
+          <span class="hvc-row-qty">×3 pzs</span>
+          <span class="hvc-row-price">$435.00</span>
+        </div>
+        <div class="hvc-row">
+          <span class="hvc-row-name">BUJE SILICONA Ø22mm</span>
+          <span class="hvc-row-qty">×10 pzs</span>
+          <span class="hvc-row-price">$210.00</span>
+        </div>
+        <div class="hvc-total">
+          <div>
+            <div class="hvc-total-label">Total a cobrar</div>
+            <div style="font-size:11px;color:var(--gray-sub);margin-top:2px;">4 artículos · IVA incluido</div>
+          </div>
+          <span class="hvc-total-val">$1,106.00</span>
+        </div>
+        <div class="hvc-bottom">
+          <button class="hvc-btn hvc-btn--ghost">Cancelar</button>
+          <button class="hvc-btn hvc-btn--primary">Cobrar →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ STATS ══════════════════════════════════════════ -->
+<div class="stats-bar">
+  <div class="container stats-inner">
+    <div class="stat">
+      <div class="stat-value"><span class="accent">$0</span></div>
+      <div class="stat-label">Costo en Beta</div>
+    </div>
+    <div class="stat-sep"></div>
+    <div class="stat">
+      <div class="stat-value"><span data-count="9999" class="accent">0</span>+</div>
+      <div class="stat-label">Productos en inventario</div>
+    </div>
+    <div class="stat-sep"></div>
+    <div class="stat">
+      <div class="stat-value">Multi<span class="accent">-LAN</span></div>
+      <div class="stat-label">Terminales simultáneas</div>
+    </div>
+    <div class="stat-sep"></div>
+    <div class="stat">
+      <div class="stat-value"><span class="accent">3</span></div>
+      <div class="stat-label">Plataformas soportadas</div>
+    </div>
+    <div class="stat-sep"></div>
+    <div class="stat">
+      <div class="stat-value"><span class="accent">100%</span></div>
+      <div class="stat-label">Funciona sin internet</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ FEATURES ══════════════════════════════════════ -->
+<section class="section-gap">
+  <div class="container">
+    <div class="features-intro">
+      <div class="reveal">
+        <p class="eyebrow" style="margin-bottom:14px;">Tecnología</p>
+        <h2 class="display display--lg">Construido para<br>el mostrador real.</h2>
+      </div>
+      <div class="reveal reveal--delay-1">
+        <p class="body-lg">Cada decisión técnica de ELRHOS viene de una pregunta: ¿esto hace más rápido al vendedor en el mostrador? Si no, no está.</p>
+        <div class="features-tag" style="margin-top:20px;">
+          <span class="tech-tag">Python 3 + PyQt5</span>
+          <span class="tech-tag">SQLite / PostgreSQL</span>
+          <span class="tech-tag">Kotlin (Android)</span>
+          <span class="tech-tag">TCP/IP LAN</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="features-cards">
+      <!-- Wide card: LAN -->
+      <div class="feat-card feat-card--wide reveal">
+        <div>
+          <div class="feat-eyebrow">Arquitectura</div>
+          <h3 class="feat-title">Red Local Multi-Terminal</h3>
+          <p class="feat-desc">Arquitectura Cliente-Servidor sobre red LAN. Una PC actúa como servidor central con la base de datos; el resto de las terminales se conectan a ella dentro de la red del negocio. Sin internet, sin suscripciones de nube, sin latencia.</p>
+          <div class="feat-list">
+            <div class="feat-list-item"><span class="feat-dot"></span>Soporte para N terminales de cobro simultáneas</div>
+            <div class="feat-list-item"><span class="feat-dot"></span>Base de datos centralizada — un único punto de verdad</div>
+            <div class="feat-list-item"><span class="feat-dot"></span>Cero dependencia de internet para operar</div>
+            <div class="feat-list-item"><span class="feat-dot"></span>Inventario sincronizado en tiempo real entre cajas</div>
+          </div>
+        </div>
+        <div class="lan-diagram">
+          <div class="lan-server">
+            <div class="lan-server-label">🖥 Servidor Central</div>
+            <div class="lan-server-title">PC Servidor + DB</div>
+          </div>
+          <div class="lan-line"></div>
+          <div class="lan-terminals">
+            <div class="lan-terminal">
+              <div class="lan-terminal-icon">💻</div>
+              <span>Terminal 1</span>
+              Caja Principal
+            </div>
+            <div class="lan-terminal">
+              <div class="lan-terminal-icon">💻</div>
+              <span>Terminal 2</span>
+              Caja Rápida
+            </div>
+            <div class="lan-terminal">
+              <div class="lan-terminal-icon">📱</div>
+              <span>Android</span>
+              Copiloto Móvil
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card: Speed -->
+      <div class="feat-card reveal">
+        <div class="feat-icon">⚡</div>
+        <div class="feat-eyebrow">Rendimiento</div>
+        <h3 class="feat-title">Velocidad Máxima en Mostrador</h3>
+        <p class="feat-desc">Interfaz nativa PyQt5 — no es un navegador disfrazado. Sin lag, sin tiempos de carga, sin dependencias web. Cada milisegundo importa cuando hay una fila de clientes.</p>
+        <div class="feat-list">
+          <div class="feat-list-item"><span class="feat-dot"></span>Búsqueda de producto instantánea por código o nombre</div>
+          <div class="feat-list-item"><span class="feat-dot"></span>Optimizado para flujo rápido de ventas</div>
+          <div class="feat-list-item"><span class="feat-dot"></span>Impresión de tickets en un click</div>
+        </div>
+      </div>
+
+      <!-- Card: Mobile -->
+      <div class="feat-card reveal reveal--delay-1">
+        <div class="feat-icon">📱</div>
+        <div class="feat-eyebrow">App móvil</div>
+        <h3 class="feat-title">Copiloto Android</h3>
+        <p class="feat-desc">App nativa en Kotlin para Android. Monitorea ventas del día, revisa stock, consulta reportes — todo desde tu teléfono, conectado a la misma red del negocio.</p>
+        <div class="feat-list">
+          <div class="feat-list-item"><span class="feat-dot"></span>Dashboard de ventas en tiempo real</div>
+          <div class="feat-list-item"><span class="feat-dot"></span>Consulta de inventario desde el piso</div>
+          <div class="feat-list-item"><span class="feat-dot"></span>Sin cuenta extra, misma LAN</div>
+        </div>
+      </div>
+
+      <!-- Card: Inventory -->
+      <div class="feat-card reveal reveal--delay-2">
+        <div class="feat-icon">📦</div>
+        <div class="feat-eyebrow">Gestión</div>
+        <h3 class="feat-title">Inventario Complejo</h3>
+        <p class="feat-desc">Pensado para catálogos de miles de SKUs con variantes: hules por metro, grapas por caja, refacciones por pieza. Unidades mixtas, múltiples proveedores, alertas de stock.</p>
+        <div class="feat-list">
+          <div class="feat-list-item"><span class="feat-dot"></span>Unidades configurables: pza, mt, kg, caja…</div>
+          <div class="feat-list-item"><span class="feat-dot"></span>Código de barras y SKU personalizados</div>
+          <div class="feat-list-item"><span class="feat-dot"></span>Alertas de stock mínimo</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:52px;" class="reveal">
+      <a href="caracteristicas.html" class="btn btn--ghost">
+        Ver todas las características
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ BETA ════════════════════════════════════════════ -->
+<section class="beta-section section-gap">
+  <div class="container">
+    <div class="beta-grid">
+      <div class="reveal">
+        <p class="eyebrow" style="margin-bottom:14px;color:var(--amber)">⚠ Estado del Proyecto</p>
+        <h2 class="display display--md" style="margin-bottom:20px;">Beta Pública:<br>Gratis, honesto<br>y en desarrollo.</h2>
+        <p class="body-lg" style="margin-bottom:28px;">ELRHOS es completamente funcional y puedes usarlo en tu negocio hoy mismo, <strong style="color:var(--text)">sin costo alguno</strong>. Al estar en desarrollo activo, pueden existir bugs o comportamientos inesperados. No te lo ocultamos — te lo decimos de frente.</p>
+        <p class="body-md" style="margin-bottom:36px;">Tu retroalimentación es el motor que impulsa cada actualización. Cada bug reportado se convierte en una mejora para todos.</p>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;">
+          <a href="beta.html" class="btn btn--amber">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Enviar Retroalimentación
+          </a>
+          <a href="beta.html" class="btn btn--ghost">Ver notas de versión</a>
+        </div>
+      </div>
+      <div class="reveal reveal--delay-1">
+        <div class="beta-visual">
+          <div style="margin-bottom:24px;">
+            <span class="badge badge--amber" style="margin-bottom:12px;">
+              <span class="pulse" style="background:var(--amber)"></span>
+              ELRHOS v0.8.x Beta
+            </span>
+          </div>
+          <div class="beta-meter">
+            <div class="beta-meter-label"><span>Estabilidad del sistema</span><span style="color:var(--amber)">78%</span></div>
+            <div class="beta-meter-bar"><div class="beta-meter-fill" style="width:78%"></div></div>
+          </div>
+          <div class="beta-meter">
+            <div class="beta-meter-label"><span>Funcionalidad POS</span><span style="color:var(--amber)">92%</span></div>
+            <div class="beta-meter-bar"><div class="beta-meter-fill" style="width:92%"></div></div>
+          </div>
+          <div class="beta-meter">
+            <div class="beta-meter-label"><span>Módulo de inventario</span><span style="color:var(--amber)">85%</span></div>
+            <div class="beta-meter-bar"><div class="beta-meter-fill" style="width:85%"></div></div>
+          </div>
+          <div class="beta-meter" style="margin-bottom:20px;">
+            <div class="beta-meter-label"><span>App Android Copiloto</span><span style="color:var(--amber)">60%</span></div>
+            <div class="beta-meter-bar"><div class="beta-meter-fill" style="width:60%"></div></div>
+          </div>
+          <div class="beta-tags">
+            <span class="beta-tag">POS Funcional</span>
+            <span class="beta-tag">Inventario activo</span>
+            <span class="beta-tag">Bugs conocidos</span>
+            <span class="beta-tag">Updates frecuentes</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ DOWNLOAD ═══════════════════════════════════════ -->
+<section class="download-section section-gap">
+  <div class="download-glow"></div>
+  <div class="container" style="position:relative;z-index:2;">
+    <div class="download-box reveal">
+      <span class="badge badge--green" style="margin-bottom:24px;">
+        <span class="pulse"></span>
+        Disponible ahora — 100% Gratis
+      </span>
+      <h2 class="display display--md" style="margin-bottom:16px;">Descarga ELRHOS hoy</h2>
+      <p class="body-lg" style="max-width:520px;margin:0 auto 40px;">Sin registro, sin tarjeta de crédito, sin límites artificiales. Solo descarga, instala y empieza a vender.</p>
+
+      <a href="descargar.html" class="btn btn--green btn--primary-lg" style="font-size:17px;padding:18px 52px;margin-bottom:28px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Descargar Instalador Windows
+      </a>
+
+      <div class="download-platforms">
+        <div class="platform-chip">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
+          Windows 10 / 11 — x64 ✓
+        </div>
+        <div class="platform-chip platform-chip--unavail">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
+          Windows x86 — En desarrollo
+        </div>
+        <div class="platform-chip platform-chip--unavail">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/></svg>
+          Android — Próximamente
+        </div>
+      </div>
+      <p style="font-size:12px;color:var(--gray-sub);margin-top:20px;">Versión Beta Pública — Puede contener errores. <a href="beta.html" style="color:var(--blue-light);">Lee las notas de versión.</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ CTA STRIP ══════════════════════════════════════ -->
+<section class="cta-strip">
+  <div class="container">
+    <h2>¿Tienes dudas? Contáctanos.</h2>
+    <p>Somos un proyecto en crecimiento y cada comentario cuenta. Escríbenos, reporta un error o simplemente di hola.</p>
+    <a href="beta.html" class="btn btn--primary btn--primary-lg">Ir al Programa Beta →</a>
+  </div>
+</section>
+
+</main>
+
+<!-- ═══════════ FOOTER ═════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-logo">
+        <img src="assets/img/logo.png" alt="ELRHOS"/>
+        <p>Sistema integral de Punto de Venta y gestión comercial para negocios con inventario complejo.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Producto</h5>
+        <ul>
+          <li><a href="caracteristicas.html">Características</a></li>
+          <li><a href="descargar.html">Descargar</a></li>
+          <li><a href="beta.html">Notas de versión</a></li>
+          <li><a href="beta.html">Hoja de ruta</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Plataformas</h5>
+        <ul>
+          <li><a href="descargar.html">Windows x64 ✓</a></li>
+          <li><a href="#" style="opacity:.45">Windows x86 (próximo)</a></li>
+          <li><a href="#" style="opacity:.45">Android (próximo)</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Contacto</h5>
+        <ul>
+          <li><a href="beta.html">Reportar un bug</a></li>
+          <li><a href="beta.html">Enviar sugerencia</a></li>
+          <li><a href="mailto:soporte@elrhos.com">soporte@elrhos.com</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 <span>ELRHOS</span> — Impulso Empresarial. Todos los derechos reservados.</p>
+      <p>Hecho con ❤️ para el comercio mexicano.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+</body>
+</html>

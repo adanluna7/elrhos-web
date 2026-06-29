@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Programa Beta — ELRHOS</title>
+  <link rel="stylesheet" href="assets/css/main.css"/>
+  <style>
+    .beta-hero {
+      position: relative;
+      padding: 100px 0 72px;
+      overflow: hidden;
+      background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(240,165,0,0.1) 0%, transparent 70%), var(--bg-root);
+    }
+    .beta-hero .grid-bg { mask-image: radial-gradient(ellipse 80% 100% at 50% 0%, black 40%, transparent 100%); -webkit-mask-image: radial-gradient(ellipse 80% 100% at 50% 0%, black 40%, transparent 100%); }
+    .beta-hero-inner { position: relative; z-index: 2; text-align: center; }
+    .beta-hero h1 { font-family: 'Rajdhani', sans-serif; font-size: clamp(40px, 7vw, 80px); font-weight: 700; line-height: 1.0; margin-bottom: 20px; }
+    .beta-hero h1 span { color: var(--amber); }
+
+    /* VERSION BADGE */
+    .version-ring {
+      display: inline-flex;
+      align-items: center;
+      gap: 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--amber-bdr);
+      border-radius: 999px;
+      padding: 10px 20px;
+      margin-bottom: 32px;
+    }
+    .version-ring .ver { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 600; color: var(--amber); }
+    .version-ring .date { font-size: 13px; color: var(--gray-sub); }
+
+    /* MAIN CONTENT GRID */
+    .beta-layout { display: grid; grid-template-columns: 1fr 380px; gap: 40px; align-items: start; }
+
+    /* CHANGELOG */
+    .changelog { }
+    .cl-version-block { margin-bottom: 48px; }
+    .cl-version-block:last-child { margin-bottom: 0; }
+    .cl-version-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+    .cl-ver-num { font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 700; color: var(--text); background: var(--bg-raised); border: 1px solid rgba(255,255,255,0.1); padding: 4px 12px; border-radius: 6px; }
+    .cl-ver-date { font-size: 13px; color: var(--gray-sub); }
+    .cl-ver-current { background: var(--amber-bg); color: var(--amber); border-color: var(--amber-bdr); }
+
+    .cl-entries { border-left: 2px solid rgba(255,255,255,0.08); padding-left: 24px; }
+    .cl-entry { margin-bottom: 16px; display: flex; gap: 12px; align-items: flex-start; }
+    .cl-entry:last-child { margin-bottom: 0; }
+    .cl-tag {
+      flex-shrink: 0;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      min-width: 60px;
+      text-align: center;
+    }
+    .cl-tag--new     { background: rgba(52,211,153,0.1);  color: var(--green);      border: 1px solid rgba(52,211,153,0.2); }
+    .cl-tag--fix     { background: rgba(59,110,212,0.1);  color: var(--blue-light); border: 1px solid var(--blue-border); }
+    .cl-tag--improve { background: rgba(240,165,0,0.08);  color: var(--amber);      border: 1px solid var(--amber-bdr); }
+    .cl-tag--bug     { background: rgba(248,113,113,0.08);color: var(--red);        border: 1px solid rgba(248,113,113,0.2); }
+    .cl-entry-text { font-size: 14px; color: var(--text-dim); line-height: 1.55; padding-top: 2px; }
+    .cl-entry-text strong { color: var(--text); }
+
+    /* ROADMAP */
+    .roadmap { }
+    .roadmap-track { position: relative; }
+    .roadmap-track::before { content: ''; position: absolute; left: 16px; top: 20px; bottom: 20px; width: 2px; background: linear-gradient(to bottom, var(--blue), rgba(59,110,212,0.1)); }
+    .roadmap-item { display: flex; gap: 20px; margin-bottom: 28px; align-items: flex-start; }
+    .roadmap-item:last-child { margin-bottom: 0; }
+    .roadmap-dot { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px; position: relative; z-index: 1; }
+    .roadmap-dot--done  { background: rgba(52,211,153,0.15); border: 2px solid var(--green); }
+    .roadmap-dot--prog  { background: var(--amber-bg); border: 2px solid var(--amber); }
+    .roadmap-dot--next  { background: var(--bg-raised); border: 2px solid rgba(255,255,255,0.15); }
+    .roadmap-content { padding-top: 4px; }
+    .roadmap-title { font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+    .roadmap-desc { font-size: 13px; color: var(--text-dim); }
+
+    /* SIDEBAR */
+    .beta-sidebar { display: flex; flex-direction: column; gap: 20px; }
+    .sidebar-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+    }
+    .sidebar-card h4 { font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 14px; }
+
+    /* PROGRESS BARS */
+    .progress-item { margin-bottom: 16px; }
+    .progress-item:last-child { margin-bottom: 0; }
+    .progress-label { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
+    .progress-label span:first-child { color: var(--text-dim); }
+    .progress-bar { height: 5px; background: var(--bg-raised); border-radius: 3px; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--blue), var(--blue-light)); }
+    .progress-fill--amber { background: linear-gradient(90deg, var(--amber), var(--amber-light)); }
+
+    /* BUG KNOWN */
+    .bug-item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 13px; }
+    .bug-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .bug-sev { flex-shrink: 0; font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 7px; border-radius: 3px; margin-top: 1px; }
+    .bug-sev--high { background: rgba(248,113,113,0.12); color: var(--red); border: 1px solid rgba(248,113,113,0.2); }
+    .bug-sev--med  { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-bdr); }
+    .bug-sev--low  { background: var(--blue-glow); color: var(--blue-light); border: 1px solid var(--blue-border); }
+    .bug-text { color: var(--text-dim); line-height: 1.5; }
+
+    /* FEEDBACK FORM */
+    .feedback-section {
+      background: var(--bg-card);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-xl);
+      padding: 56px;
+    }
+    .feedback-header { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-bottom: 48px; align-items: center; }
+    .feedback-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .form-full { grid-column: 1 / -1; }
+
+    /* TYPE SELECTOR */
+    .type-selector { display: flex; gap: 8px; flex-wrap: wrap; }
+    .type-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      background: var(--bg-raised);
+      border: 1px solid rgba(255,255,255,0.09);
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .type-btn:hover { border-color: var(--blue-border); color: var(--text); }
+    .type-btn.selected { background: var(--blue-glow); border-color: var(--blue); color: var(--blue-light); }
+
+    @media (max-width: 1024px) {
+      .beta-layout { grid-template-columns: 1fr; }
+      .feedback-header { grid-template-columns: 1fr; gap: 24px; }
+    }
+    @media (max-width: 640px) {
+      .feedback-form-grid { grid-template-columns: 1fr; }
+      .feedback-section { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container nav-inner">
+    <a href="index.html" class="nav-logo"><img src="assets/img/logo.png" alt="ELRHOS"/></a>
+    <div class="nav-menu">
+      <a href="index.html" class="nav-link">Inicio</a>
+      <a href="caracteristicas.html" class="nav-link">Características</a>
+      <a href="beta.html" class="nav-link active">Programa Beta</a>
+      <a href="descargar.html" class="nav-link">Descargar</a>
+    </div>
+    <div class="nav-actions">
+      <a href="beta.html" class="btn btn--ghost" style="padding:9px 20px;font-size:13px;">Beta Feedback</a>
+      <a href="descargar.html" class="btn btn--primary" style="padding:9px 22px;font-size:13px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Descargar Gratis
+      </a>
+    </div>
+    <button class="nav-burger" aria-label="Abrir menú"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="nav-mobile">
+  <a href="index.html" class="nav-link">Inicio</a>
+  <a href="caracteristicas.html" class="nav-link">Características</a>
+  <a href="beta.html" class="nav-link">Programa Beta</a>
+  <a href="descargar.html" class="nav-link">Descargar</a>
+  <a href="descargar.html" class="btn btn--primary">Descargar Gratis</a>
+</div>
+
+<main class="page-top">
+
+  <section class="beta-hero">
+    <div class="grid-bg"></div>
+    <div class="container beta-hero-inner">
+      <div class="version-ring">
+        <span class="ver">v0.8.3-beta</span>
+        <span style="width:1px;height:16px;background:rgba(255,255,255,0.12)"></span>
+        <span class="date">Actualizado: Junio 2025</span>
+        <span class="badge badge--amber" style="font-size:9px;padding:3px 10px;">
+          <span class="pulse" style="background:var(--amber)"></span>
+          Activo
+        </span>
+      </div>
+      <h1>Programa<br><span>Beta Pública</span></h1>
+      <p style="font-size:clamp(16px,2vw,19px);color:var(--text-dim);max-width:540px;margin:16px auto 0;line-height:1.7;">Sé parte del desarrollo. Tu retroalimentación construye el software que todos usamos.</p>
+    </div>
+  </section>
+
+  <!-- AVISO DESTACADO -->
+  <div style="background:linear-gradient(135deg,rgba(240,165,0,0.08),rgba(240,165,0,0.03));border-top:1px solid var(--amber-bdr);border-bottom:1px solid var(--amber-bdr);padding:32px 0;">
+    <div class="container">
+      <div style="display:flex;align-items:flex-start;gap:20px;max-width:860px;">
+        <div style="font-size:32px;flex-shrink:0;">⚠️</div>
+        <div>
+          <h3 style="font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;color:var(--amber);margin-bottom:8px;">Advertencia importante sobre la versión Beta</h3>
+          <p style="font-size:14px;color:var(--text-dim);line-height:1.7;">ELRHOS en versión Beta es <strong style="color:var(--text)">completamente gratuito</strong> y funcional para uso en negocios. Sin embargo, al ser una versión en desarrollo activo, <strong style="color:var(--text)">puede presentar errores, comportamientos inesperados o pérdidas de datos en casos extremos</strong>. Recomendamos realizar respaldos frecuentes. Úsalo con esta consideración y comparte cualquier problema que encuentres — eso es exactamente lo que hace avanzar el proyecto.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHANGELOG + SIDEBAR -->
+  <section class="section-gap">
+    <div class="container">
+      <div class="beta-layout">
+
+        <!-- LEFT: Changelog + Roadmap -->
+        <div>
+          <!-- CHANGELOG -->
+          <div style="margin-bottom:72px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:36px;" class="reveal">
+              <div>
+                <p class="eyebrow" style="margin-bottom:8px;">Historial</p>
+                <h2 class="display display--sm">Notas de versión</h2>
+              </div>
+            </div>
+
+            <div class="changelog reveal">
+              <!-- v0.8.3 -->
+              <div class="cl-version-block">
+                <div class="cl-version-header">
+                  <span class="cl-ver-num cl-ver-current">v0.8.3</span>
+                  <span class="cl-ver-date">Junio 2025</span>
+                  <span class="badge badge--amber" style="font-size:9px;">Actual</span>
+                </div>
+                <div class="cl-entries">
+                  <div class="cl-entry">
+                    <span class="cl-tag cl-tag--fix">FIX</span>
+                    <p class="cl-entry-text">Corregido error de sincronización en <strong>multi-terminal</strong> que causaba desincronía de stock al realizar ventas simultáneas.</p>
+                  </div>
+                  <div class="cl-entry">
+                    <span class="cl-tag cl-tag--new">NUEVO</span>
+                    <p class="cl-entry-text">Soporte para <strong>impresoras térmicas de 58mm</strong> además de las de 80mm ya soportadas.</p>
+                  </div>
+                  <div class="cl-entry">
+                    <span class="cl-tag cl-tag--improve">MEJORA</span>
+                    <p class="cl-entry-text">Velocidad de búsqueda de producto mejorada un <strong>40%</strong> mediante indexación optimizada en SQLite.</p>
+                  </div>
+                  <div class="cl-entry">
+                    <span class="cl-tag cl-tag--fix">FIX</span>
+                    <p class="cl-entry-text">Resuelto crash al importar catálogos CSV con caracteres especiales (ñ, á, é, ü).</p>
+                  </div>
+                  <div class="cl-entry">
+                    <span class="cl-tag cl-tag--new">NUEVO</span>
+                    <p class="cl-entry-text">Campo de <strong>notas internas</strong> en cada venta para anotaciones del vendedor.</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- v0.8.0 -->
+              <div class="cl-version-block">
+                <div class="cl-version-header">
+                  <span class="cl-ver-num">v0.8.0</span>
+                  <span class="cl-ver-date">Mayo 2025</span>
+                </div>
+                <div class="cl-entries">
+                  <div class="cl-entry">
+                    <span class="cl-tag cl-tag--new">NUEVO</span>
+                    <p class="cl-entry-text"><strong>Módulo de clientes</strong>: base de datos de clientes con historial de compras y crédito.</p>
+                  </div>
+                  <div class="cl-entry">
+                    <span class="cl-tag cl-tag--new">NUEVO</span>
+                    <p class="cl-entry-text"><strong>Devoluciones</strong>: proceso completo de devolución con reintegro automático a inventario.</p>
+                  </div>
+                  <div class="cl-entry">
+                    <span class="cl-tag cl-tag--improve">MEJORA</span>
+                    <p class="cl-entry-text">Rediseño de la pantalla principal del POS para mejorar flujo de trabajo en mostrador.</p>
+                  </div>
+                  <div class="cl-entry">
+                    <span class="cl-tag cl-tag--fix">FIX</span>
+                    <p class="cl-entry-text">Corregido cálculo de IVA en productos exentos.</p>
+                  </div>
+                  <div class="cl-entry">
+                    <span class="cl-tag cl-tag--bug">BUG</span>
+                    <p class="cl-entry-text">Conocido: el módulo de reportes puede mostrar datos incorrectos al cambiar de fecha sin reiniciar la sesión. Workaround: cierra y vuelve a abrir el módulo.</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- v0.7.x -->
+              <div class="cl-version-block">
+                <div class="cl-version-header">
+                  <span class="cl-ver-num">v0.7.5</span>
+                  <span class="cl-ver-date">Abril 2025</span>
+                </div>
+                <div class="cl-entries">
+                  <div class="cl-entry">
+                    <span class="cl-tag cl-tag--new">NUEVO</span>
+                    <p class="cl-entry-text"><strong>Arquitectura multi-terminal LAN</strong>: primera versión estable del modo Cliente-Servidor.</p>
+                  </div>
+                  <div class="cl-entry">
+                    <span class="cl-tag cl-tag--new">NUEVO</span>
+                    <p class="cl-entry-text">Sistema de <strong>permisos por usuario</strong>: roles de Administrador, Cajero y Supervisor.</p>
+                  </div>
+                  <div class="cl-entry">
+                    <span class="cl-tag cl-tag--improve">MEJORA</span>
+                    <p class="cl-entry-text">Backup automático programable por horario con encriptación AES-256.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ROADMAP -->
+          <div class="reveal">
+            <p class="eyebrow" style="margin-bottom:8px;">Próximamente</p>
+            <h2 class="display display--sm" style="margin-bottom:36px;">Hoja de ruta</h2>
+            <div class="roadmap-track">
+              <div class="roadmap-item">
+                <div class="roadmap-dot roadmap-dot--done">✓</div>
+                <div class="roadmap-content">
+                  <div class="roadmap-title">Multi-terminal LAN</div>
+                  <p class="roadmap-desc">Arquitectura Cliente-Servidor estable para redes locales. <span class="badge badge--green" style="font-size:10px;padding:2px 8px;">Listo</span></p>
+                </div>
+              </div>
+              <div class="roadmap-item">
+                <div class="roadmap-dot roadmap-dot--done">✓</div>
+                <div class="roadmap-content">
+                  <div class="roadmap-title">Módulo de clientes y crédito</div>
+                  <p class="roadmap-desc">Base de datos de clientes con historial y saldo. <span class="badge badge--green" style="font-size:10px;padding:2px 8px;">Listo</span></p>
+                </div>
+              </div>
+              <div class="roadmap-item">
+                <div class="roadmap-dot roadmap-dot--prog">⟳</div>
+                <div class="roadmap-content">
+                  <div class="roadmap-title">App Android Copiloto</div>
+                  <p class="roadmap-desc">Dashboard móvil y consulta de inventario desde Android. <span class="badge badge--amber" style="font-size:10px;padding:2px 8px;">En desarrollo</span></p>
+                </div>
+              </div>
+              <div class="roadmap-item">
+                <div class="roadmap-dot roadmap-dot--prog">⟳</div>
+                <div class="roadmap-content">
+                  <div class="roadmap-title">Instalador Windows x86 (32-bit)</div>
+                  <p class="roadmap-desc">Soporte para equipos más antiguos de 32 bits. <span class="badge badge--amber" style="font-size:10px;padding:2px 8px;">En desarrollo</span></p>
+                </div>
+              </div>
+              <div class="roadmap-item">
+                <div class="roadmap-dot roadmap-dot--next">○</div>
+                <div class="roadmap-content">
+                  <div class="roadmap-title">Reportes avanzados</div>
+                  <p class="roadmap-desc">Gráficas de ventas, rentabilidad por producto, comparativas de períodos.</p>
+                </div>
+              </div>
+              <div class="roadmap-item">
+                <div class="roadmap-dot roadmap-dot--next">○</div>
+                <div class="roadmap-content">
+                  <div class="roadmap-title">Módulo de compras y proveedores</div>
+                  <p class="roadmap-desc">Órdenes de compra, recepción de mercancía y conciliación automática.</p>
+                </div>
+              </div>
+              <div class="roadmap-item">
+                <div class="roadmap-dot roadmap-dot--next">○</div>
+                <div class="roadmap-content">
+                  <div class="roadmap-title">Facturación electrónica (CFDI)</div>
+                  <p class="roadmap-desc">Emisión de facturas CFDI 4.0 directamente desde el POS.</p>
+                </div>
+              </div>
+              <div class="roadmap-item">
+                <div class="roadmap-dot roadmap-dot--next">○</div>
+                <div class="roadmap-content">
+                  <div class="roadmap-title">Lanzamiento v1.0 estable</div>
+                  <p class="roadmap-desc">Primera versión oficial post-beta con soporte completo.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Sidebar -->
+        <div class="beta-sidebar">
+
+          <!-- Estabilidad -->
+          <div class="sidebar-card reveal">
+            <h4>Estado actual v0.8.3</h4>
+            <div class="progress-item">
+              <div class="progress-label"><span>Estabilidad general</span><span style="color:var(--green)">78%</span></div>
+              <div class="progress-bar"><div class="progress-fill" style="width:78%"></div></div>
+            </div>
+            <div class="progress-item">
+              <div class="progress-label"><span>POS y cobros</span><span style="color:var(--green)">92%</span></div>
+              <div class="progress-bar"><div class="progress-fill" style="width:92%"></div></div>
+            </div>
+            <div class="progress-item">
+              <div class="progress-label"><span>Inventario</span><span style="color:var(--green)">85%</span></div>
+              <div class="progress-bar"><div class="progress-fill" style="width:85%"></div></div>
+            </div>
+            <div class="progress-item">
+              <div class="progress-label"><span>Red LAN multi-terminal</span><span style="color:var(--amber)">71%</span></div>
+              <div class="progress-bar"><div class="progress-fill progress-fill--amber" style="width:71%"></div></div>
+            </div>
+            <div class="progress-item">
+              <div class="progress-label"><span>App Android</span><span style="color:var(--amber)">40%</span></div>
+              <div class="progress-bar"><div class="progress-fill progress-fill--amber" style="width:40%"></div></div>
+            </div>
+          </div>
+
+          <!-- Bugs conocidos -->
+          <div class="sidebar-card reveal">
+            <h4 style="margin-bottom:16px;">🐛 Bugs conocidos</h4>
+            <div class="bug-item">
+              <span class="bug-sev bug-sev--high">Alto</span>
+              <p class="bug-text">Sincronización multi-terminal puede fallar si el servidor pierde conexión brevemente.</p>
+            </div>
+            <div class="bug-item">
+              <span class="bug-sev bug-sev--med">Medio</span>
+              <p class="bug-text">Módulo de reportes muestra datos incorrectos al cambiar fechas sin recargar.</p>
+            </div>
+            <div class="bug-item">
+              <span class="bug-sev bug-sev--med">Medio</span>
+              <p class="bug-text">Importación de CSV falla con archivos mayores a 10,000 filas en algunos equipos.</p>
+            </div>
+            <div class="bug-item">
+              <span class="bug-sev bug-sev--low">Bajo</span>
+              <p class="bug-text">El ticket de impresión no aplica correctamente el logo en impresoras de 58mm en algunos drivers.</p>
+            </div>
+            <div class="bug-item">
+              <span class="bug-sev bug-sev--low">Bajo</span>
+              <p class="bug-text">Búsqueda de producto con caracteres especiales puede tardar más de lo esperado.</p>
+            </div>
+          </div>
+
+          <!-- Descarga directa -->
+          <div class="sidebar-card reveal" style="border-color:var(--blue-border);background:linear-gradient(135deg,rgba(59,110,212,0.08),var(--bg-card));">
+            <h4>Descarga actual</h4>
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+              <span class="badge badge--green"><span class="pulse"></span>Disponible</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--gray-sub)">v0.8.3</span>
+            </div>
+            <a href="descargar.html" class="btn btn--primary" style="width:100%;justify-content:center;margin-bottom:12px;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Descargar Instalador
+            </a>
+            <p style="font-size:12px;color:var(--gray-sub);text-align:center;">Windows 10/11 — 64 bits (x64) únicamente</p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEEDBACK FORM -->
+  <section style="background:var(--bg-deep);padding:80px 0;">
+    <div class="container">
+      <div class="feedback-section reveal">
+        <div class="feedback-header">
+          <div>
+            <p class="eyebrow" style="margin-bottom:12px;">Programa Beta</p>
+            <h2 class="display display--md" style="margin-bottom:16px;">Cuéntanos<br>qué encontraste.</h2>
+            <p class="body-md">Cada reporte que envías llega directamente al equipo de desarrollo. No hay bot ni ticket genérico — aquí nos importa lo que dices.</p>
+          </div>
+          <div style="background:var(--bg-raised);border:1px solid rgba(255,255,255,0.07);border-radius:var(--radius-lg);padding:28px;">
+            <div style="font-size:36px;margin-bottom:12px;">🎯</div>
+            <h4 style="font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;margin-bottom:8px;">¿Qué pasa con tu reporte?</h4>
+            <div style="display:flex;flex-direction:column;gap:10px;margin-top:16px;">
+              <div style="display:flex;gap:10px;font-size:13px;color:var(--text-dim);">
+                <span style="color:var(--green);font-weight:700;flex-shrink:0;">1.</span>
+                Lo revisamos en menos de 48 horas.
+              </div>
+              <div style="display:flex;gap:10px;font-size:13px;color:var(--text-dim);">
+                <span style="color:var(--green);font-weight:700;flex-shrink:0;">2.</span>
+                Lo clasificamos por prioridad y severidad.
+              </div>
+              <div style="display:flex;gap:10px;font-size:13px;color:var(--text-dim);">
+                <span style="color:var(--green);font-weight:700;flex-shrink:0;">3.</span>
+                Se incluye en el changelog de la siguiente versión.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <form id="feedbackForm">
+          <!-- Tipo -->
+          <div class="form-group">
+            <div class="form-label">Tipo de reporte</div>
+            <div class="type-selector">
+              <button type="button" class="type-btn selected" onclick="selectType(this)">🐛 Bug / Error</button>
+              <button type="button" class="type-btn" onclick="selectType(this)">💡 Sugerencia</button>
+              <button type="button" class="type-btn" onclick="selectType(this)">🚀 Función nueva</button>
+              <button type="button" class="type-btn" onclick="selectType(this)">❓ Pregunta</button>
+              <button type="button" class="type-btn" onclick="selectType(this)">👍 Comentario positivo</button>
+            </div>
+          </div>
+
+          <div class="feedback-form-grid">
+            <div class="form-group">
+              <label class="form-label">Nombre (opcional)</label>
+              <input class="form-input" type="text" placeholder="Tu nombre"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Correo electrónico (opcional)</label>
+              <input class="form-input" type="email" placeholder="para darte seguimiento"/>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Versión de ELRHOS</label>
+              <select class="form-select form-input">
+                <option>v0.8.3 (Actual)</option>
+                <option>v0.8.0</option>
+                <option>v0.7.5</option>
+                <option>No sé / Otra</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Sistema operativo</label>
+              <select class="form-select form-input">
+                <option>Windows 11 (64-bit)</option>
+                <option>Windows 10 (64-bit)</option>
+                <option>Windows 10 (32-bit)</option>
+                <option>Otro</option>
+              </select>
+            </div>
+
+            <div class="form-group form-full">
+              <label class="form-label">Título del reporte *</label>
+              <input class="form-input" type="text" placeholder="Describe brevemente el problema o sugerencia" required/>
+            </div>
+
+            <div class="form-group form-full">
+              <label class="form-label">Descripción detallada *</label>
+              <textarea class="form-textarea" style="min-height:160px;" placeholder="Cuéntanos paso a paso qué ocurrió, qué esperabas que pasara y qué pasó en su lugar. Cualquier detalle ayuda." required></textarea>
+            </div>
+
+            <div class="form-group form-full">
+              <label class="form-label">¿Puedes reproducir el error? (si aplica)</label>
+              <div class="type-selector">
+                <button type="button" class="type-btn selected" onclick="selectType(this)">Siempre</button>
+                <button type="button" class="type-btn" onclick="selectType(this)">A veces</button>
+                <button type="button" class="type-btn" onclick="selectType(this)">Solo una vez</button>
+                <button type="button" class="type-btn" onclick="selectType(this)">No aplica</button>
+              </div>
+            </div>
+
+            <div class="form-group form-full">
+              <button type="submit" class="btn btn--amber btn--primary-lg" style="min-width:220px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                Enviar Reporte
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-logo">
+        <img src="assets/img/logo.png" alt="ELRHOS"/>
+        <p>Sistema integral de Punto de Venta y gestión comercial para negocios con inventario complejo.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Producto</h5>
+        <ul>
+          <li><a href="caracteristicas.html">Características</a></li>
+          <li><a href="descargar.html">Descargar</a></li>
+          <li><a href="beta.html">Notas de versión</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Plataformas</h5>
+        <ul>
+          <li><a href="descargar.html">Windows x64 ✓</a></li>
+          <li><a href="#" style="opacity:.45">Windows x86 (próximo)</a></li>
+          <li><a href="#" style="opacity:.45">Android (próximo)</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Contacto</h5>
+        <ul>
+          <li><a href="beta.html">Reportar un bug</a></li>
+          <li><a href="mailto:soporte@elrhos.com">soporte@elrhos.com</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 <span>ELRHOS</span> — Impulso Empresarial.</p>
+      <p>Hecho con ❤️ para el comercio mexicano.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+<script>
+  function selectType(btn) {
+    const group = btn.closest('.type-selector');
+    group.querySelectorAll('.type-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  }
+</script>
+</body>
+</html>
